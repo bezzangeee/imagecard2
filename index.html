@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>상상력 카드</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; background: #fafafa; }
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-top: 20px; }
+    .card { width: 100%; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+    .controls { margin: 15px 0; }
+    select, button { padding: 6px 10px; font-size: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>상상력 카드</h1>
+  
+  <div class="controls">
+    <label for="count">카드 개수:</label>
+    <input type="number" id="count" value="6" min="1" max="20">
+    
+    <label for="theme">테마:</label>
+    <select id="theme">
+      <option value="people">인물</option>
+      <option value="children">어린이</option>
+      <option value="school,playground,classroom">학교/놀이터</option>
+      <option value="market,street">시장/거리</option>
+      <option value="random">랜덤</option>
+    </select>
+    
+    <button onclick="createCards()">카드 만들기</button>
+  </div>
+
+  <div class="card-grid" id="cardGrid"></div>
+
+  <script>
+    const ACCESS_KEY = "Y_9l5E_9_xpGvmdtQwbY9WZrzqtjnB3ldXv-uZtSKU4"; // https://unsplash.com/developers 에서 발급
+
+    async function createCards() {
+      const count = document.getElementById('count').value;
+      let theme = document.getElementById('theme').value;
+
+      if (theme === "random") {
+        theme = "people,children,street,playground";
+      }
+
+      const res = await fetch(`https://api.unsplash.com/photos/random?query=${theme}&count=${count}&content_filter=high&client_id=${ACCESS_KEY}`);
+      const data = await res.json();
+
+      const grid = document.getElementById('cardGrid');
+      grid.innerHTML = "";
+
+      data.forEach(photo => {
+        const img = document.createElement('img');
+        img.src = photo.urls.small;
+        img.className = "card";
+        grid.appendChild(img);
+      });
+    }
+  </script>
+</body>
+</html>
